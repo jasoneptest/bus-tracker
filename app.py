@@ -5,7 +5,7 @@ from datetime import datetime, timezone, timedelta
 # ==================== 設定區 ====================
 CUSTOM_TITLE = "🚍 城巴 20 號線（南昌站）實時到站"
 TITLE_SIZE = "28px"
-CONTENT_SIZE = "18px"
+CONTENT_SIZE = "25px"
 STATION_SIZE = "22px"
 # ==================================================
 
