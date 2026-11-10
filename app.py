@@ -3,10 +3,10 @@ import requests
 from datetime import datetime, timezone, timedelta
 
 # ==================== 設定區 ====================
-CUSTOM_TITLE = "🚍城巴 20 號線（南昌站）實時到站"
+CUSTOM_TITLE = "🚍 城巴 20 號線實時到站查詢"
 TITLE_SIZE = "28px"
 CONTENT_SIZE = "18px"     # 一般說明文字大小
-TABLE_TEXT_SIZE ="18px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
+TABLE_TEXT_SIZE = "16px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
 STATION_SIZE = "22px"     # 站點名稱大小
 # ==================================================
 
@@ -28,17 +28,24 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.markdown(f"<h1 style='font-size: {TITLE_SIZE};'>{CUSTOM_TITLE}</h1>", unsafe_allow_html=True)
-#st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
+st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
 
 @st.cache_data(ttl=3600)
-def get_nam_cheong_stops():
+def get_bus_stops():
     route = "20"
-    target_keyword = "南昌站"
-    # 📌 將 inbound (往啟德) 放前面，讓它排在上面；outbound (往海達邨) 放後面
-    directions = ["inbound", "outbound"]
+    # 設定要監控的目標：分別指定方向、搜尋關鍵字與顯示名稱
+    targets = [
+        {"direction": "inbound", "keyword": "南昌站", "display_name": "南昌站往啟德"},
+        {"direction": "outbound", "keyword": "柏景灣", "display_name": "柏景灣到南昌站"}
+    ]
+    
     found_stops = []
     
-    for direction in directions:
+    for t in targets:
+        direction = t["direction"]
+        keyword = t["keyword"]
+        display_name = t["display_name"]
+        
         route_stop_url = f"https://rt.data.gov.hk/v2/transport/citybus/route-stop/CTB/{route}/{direction}"
         res = requests.get(route_stop_url)
         if res.status_code != 200:
@@ -49,19 +56,21 @@ def get_nam_cheong_stops():
             stop_res = requests.get(f"https://rt.data.gov.hk/v2/transport/citybus/stop/{stop_id}")
             if stop_res.status_code == 200:
                 name_tc = stop_res.json().get("data", {}).get("name_tc", "")
-                if target_keyword in name_tc:
+                if keyword in name_tc:
                     if not any(s['stop_id'] == stop_id for s in found_stops):
                         found_stops.append({
                             "stop_id": stop_id,
                             "name_tc": name_tc,
-                            "direction": direction
+                            "direction": direction,
+                            "display_name": display_name
                         })
+                        break  # 找到該方向的站點後跳出內層迴圈
     return found_stops
 
-stops = get_nam_cheong_stops()
+stops = get_bus_stops()
 
 if not stops:
-    st.error("❌ 找不到城巴 20 號線途經的南昌站站點資料，請檢查網路或稍後再試。")
+    st.error("❌ 找不到相關站點資料，請檢查網路或稍後再試。")
 else:
     @st.fragment(run_every=30)
     def render_eta():
@@ -70,17 +79,11 @@ else:
         
         for s in stops:
             stop_id = s['stop_id']
-            stop_name = s['name_tc']
+            display_name = s['display_name']
             direction = s['direction']
             
-            # 根據方向自訂顯示名稱
-            if direction == "outbound":
-                display_station_name = "南昌站往海達邨"
-            else:
-                display_station_name = "南昌站往啟德"
-            
-            st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 {display_station_name}</div>", unsafe_allow_html=True)
-            #st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
+            st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 站點: {display_name}</div>", unsafe_allow_html=True)
+            st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
             
             eta_url = f"https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/{stop_id}/20"
             res = requests.get(eta_url)
