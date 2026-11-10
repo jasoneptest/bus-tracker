@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 st.markdown(f"<h1 style='font-size: {TITLE_SIZE};'>{CUSTOM_TITLE}</h1>", unsafe_allow_html=True)
-#st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
+st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
 
 @st.cache_data(ttl=3600)
 def get_nam_cheong_stops():
@@ -69,7 +69,7 @@ else:
                 display_station_name = "南昌站往啟德"
             
             st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 站點: {display_station_name}</div>", unsafe_allow_html=True)
-            st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
+            #st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
             
             eta_url = f"https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/{stop_id}/20"
             res = requests.get(eta_url)
