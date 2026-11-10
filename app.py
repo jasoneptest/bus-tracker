@@ -15,7 +15,7 @@ st.title("🚍 城巴 20 號線（南昌站）實時到站查詢")
 st.write("即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。")
 
 # 動態搜尋南昌站的 Stop ID
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=1000)
 def get_nam_cheong_stops():
     route = "20"
     target_keyword = "南昌站"
