@@ -119,7 +119,7 @@ else:
             
             # 顯示目標站預計到達提示（套用 SUB_TEXT_SIZE 變數控制大小）
             if target_eta_time:
-                st.markdown(f"<div style='background-color: #f0f2f6; padding: 8px 12px; border-radius: 5px; margin-bottom: 8px; font-size: {SUB_TEXT_SIZE};'>🚌 第一架車預計到達<b>{target_stop_name}</b>時間：{target_eta_time}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='background-color: #f0f2f6; padding: 8px 12px; border-radius: 5px; margin-bottom: 8px; font-size: {SUB_TEXT_SIZE};'>🚌 最近一班車預計到達<b>{target_stop_name}</b>時間：{target_eta_time}</div>", unsafe_allow_html=True)
             
             if res.status_code == 200:
                 eta_data = res.json().get("data", [])
