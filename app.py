@@ -7,7 +7,7 @@ CUSTOM_TITLE = "Bethany 20號專線巴士🚍實時到站查詢"
 TITLE_SIZE = "28px"
 CONTENT_SIZE = "18px"     # 一般說明文字大小
 SUB_TEXT_SIZE = "18px"    # 📌 第一架車預計到達中途站的提示文字大小（可在此自由更改）
-TABLE_TEXT_SIZE = "20px"  # 📌 表格內的文字大小（可在此自由更改）
+TABLE_TEXT_SIZE = "28px"  # 📌 表格內的文字大小（可在此自由更改）
 STATION_SIZE = "22px"     # 站點名稱大小
 # ==================================================
 
@@ -114,7 +114,7 @@ else:
                             t_dt = datetime.fromisoformat(t_eta_str).astimezone(HK_TZ)
                             diff_s = (t_dt - now_hk).total_seconds()
                             t_mins = max(0, int(round(diff_s / 60)))
-                            target_eta_time = f"第一架車約 **{t_mins} 分鐘後** ({t_dt.strftime('%H:%M:%S')})"
+                            target_eta_time = f"({t_dt.strftime('%H:%M:%S')})**{t_mins} 分鐘後** "
                             break
             
             # 顯示目標站預計到達提示（套用 SUB_TEXT_SIZE 變數控制大小）
