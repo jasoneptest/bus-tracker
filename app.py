@@ -5,10 +5,9 @@ from datetime import datetime, timezone, timedelta
 # ==================== 字體大小與標題自訂設定區 ====================
 CUSTOM_TITLE = "🚍 城巴 20 號線（南昌站）實時到站"  # 網頁標題文字
 
-# 你可以在這裡自由調整不同區塊的大小（數值越大字體越大）
 TITLE_SIZE = "28px"       # 頁面大標題大小
 CONTENT_SIZE = "18px"     # 一般說明與表格內文字大小
-STATION_SIZE = "22px"     # 站點名稱大小 (例如 📍 站點: 南昌站)
+STATION_SIZE = "22px"     # 站點名稱大小
 # ================================================================
 
 # 定義香港時區 (UTC+8)
@@ -20,11 +19,9 @@ st.set_page_config(
     layout="centered"
 )
 
-# 使用 HTML 自訂標題與內文大小
 st.markdown(f"<h1 style='font-size: {TITLE_SIZE};'>{CUSTOM_TITLE}</h1>", unsafe_allow_html=True)
 st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
 
-# 動態搜尋南昌站的 Stop ID
 @st.cache_data(ttl=3600)
 def get_nam_cheong_stops():
     route = "20"
@@ -67,7 +64,6 @@ else:
             stop_name = s['name_tc']
             direction = s['direction']
             
-            # 自訂站點名稱與副標題大小
             st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 站點: {stop_name}</div>", unsafe_allow_html=True)
             st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
             
@@ -81,7 +77,7 @@ else:
                     st.info("目前此站點暫無實時到站班次資料（可能該時段暫無班次）。")
                     continue
                 
-                # 組合 HTML 表格並套用自訂的內容大小
+                # 修正：確保包含完整的 <table ...> 開頭標籤
                 table_html = f"""
                 <table style="width:100%; font-size: {CONTENT_SIZE}; border-collapse: collapse; margin-top: 10px;">
                   <tr style="border-bottom: 2px solid #ddd; text-align: left; background-color: #f9f9f9;">
