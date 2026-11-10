@@ -83,10 +83,10 @@ stops = get_bus_stops()
 if not stops:
     st.error("❌ 找不到相關站點資料，請檢查網路或稍後再試。")
 else:
-    @st.fragment(run_every=30)
+    @st.fragment(run_every=10)
     def render_eta():
         now_hk = datetime.now(HK_TZ)
-        st.markdown(f"<br><span style='font-size: {CONTENT_SIZE};'>⏱️ <b>最後更新時間:</b> {now_hk.strftime('%Y-%m-%d %H:%M:%S')} <i>(每 30 秒自動更新)</i></span>", unsafe_allow_html=True)
+        st.markdown(f"<br><span style='font-size: {CONTENT_SIZE};'>⏱️ <b>最後更新時間:</b> {now_hk.strftime('%Y-%m-%d %H:%M:%S')} <i>(每 10 秒自動更新)</i></span>", unsafe_allow_html=True)
         
         for s in stops:
             stop_id = s['stop_id']
