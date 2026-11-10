@@ -3,10 +3,10 @@ import requests
 from datetime import datetime, timezone, timedelta
 
 # ==================== 設定區 ====================
-CUSTOM_TITLE = "城巴 20 號線（南昌站）實時到站"
+CUSTOM_TITLE = "🚍城巴 20 號線（南昌站）實時到站"
 TITLE_SIZE = "28px"
 CONTENT_SIZE = "18px"     # 一般說明文字大小
-TABLE_TEXT_SIZE = "18px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
+TABLE_TEXT_SIZE ="18px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
 STATION_SIZE = "22px"     # 站點名稱大小
 # ==================================================
 
@@ -79,7 +79,7 @@ else:
             else:
                 display_station_name = "南昌站往啟德"
             
-            st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 站點: {display_station_name}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 {display_station_name}</div>", unsafe_allow_html=True)
             #st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
             
             eta_url = f"https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/{stop_id}/20"
