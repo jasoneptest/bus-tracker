@@ -3,7 +3,7 @@ import requests
 from datetime import datetime, timezone, timedelta
 
 # ==================== 設定區 ====================
-CUSTOM_TITLE = "🚍 Bethany 20號等專線巴士實時到站查詢"
+CUSTOM_TITLE = " Bethany 20號專線巴士🚍實時到站查詢"
 TITLE_SIZE = "28px"
 CONTENT_SIZE = "18px"     # 一般說明文字大小
 TABLE_TEXT_SIZE = "16px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
