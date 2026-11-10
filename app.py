@@ -5,8 +5,9 @@ from datetime import datetime, timezone, timedelta
 # ==================== 設定區 ====================
 CUSTOM_TITLE = "🚍 城巴 20 號線（南昌站）實時到站"
 TITLE_SIZE = "28px"
-CONTENT_SIZE = "18px"
-STATION_SIZE = "20px"
+CONTENT_SIZE = "18px"     # 一般說明文字大小
+TABLE_TEXT_SIZE = "16px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
+STATION_SIZE = "22px"     # 站點名稱大小
 # ==================================================
 
 HK_TZ = timezone(timedelta(hours=8))
@@ -17,14 +18,24 @@ st.set_page_config(
     layout="centered"
 )
 
+# 透過 CSS 樣式控制表格內的文字大小
+st.markdown(f"""
+    <style>
+    table {{
+        font-size: {TABLE_TEXT_SIZE} !important;
+    }}
+    </style>
+""", unsafe_allow_html=True)
+
 st.markdown(f"<h1 style='font-size: {TITLE_SIZE};'>{CUSTOM_TITLE}</h1>", unsafe_allow_html=True)
-#st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
+st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
 
 @st.cache_data(ttl=3600)
 def get_nam_cheong_stops():
     route = "20"
     target_keyword = "南昌站"
-    directions = ["outbound", "inbound"]
+    # 📌 將 inbound (往啟德) 放前面，讓它排在上面；outbound (往海達邨) 放後面
+    directions = ["inbound", "outbound"]
     found_stops = []
     
     for direction in directions:
@@ -69,7 +80,7 @@ else:
                 display_station_name = "南昌站往啟德"
             
             st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 站點: {display_station_name}</div>", unsafe_allow_html=True)
-            #st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
+            st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
             
             eta_url = f"https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/{stop_id}/20"
             res = requests.get(eta_url)
