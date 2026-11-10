@@ -3,7 +3,7 @@ import requests
 from datetime import datetime, timezone, timedelta
 
 # ==================== 設定區 ====================
-CUSTOM_TITLE = "🚍 城巴 20 號線實時到站查詢"
+CUSTOM_TITLE = "🚍 Bethany 20號等專線巴士實時到站查詢"
 TITLE_SIZE = "28px"
 CONTENT_SIZE = "18px"     # 一般說明文字大小
 TABLE_TEXT_SIZE = "16px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
@@ -28,15 +28,15 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 st.markdown(f"<h1 style='font-size: {TITLE_SIZE};'>{CUSTOM_TITLE}</h1>", unsafe_allow_html=True)
-st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
+#st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
 
 @st.cache_data(ttl=3600)
 def get_bus_stops():
     route = "20"
     # 設定要監控的目標：分別指定方向、搜尋關鍵字與顯示名稱
     targets = [
-        {"direction": "inbound", "keyword": "南昌站", "display_name": "南昌站往啟德"},
-        {"direction": "outbound", "keyword": "柏景灣", "display_name": "柏景灣到南昌站"}
+        {"direction": "inbound", "keyword": "南昌站", "display_name": "返學: 南昌站往啟德"},
+        {"direction": "outbound", "keyword": "柏景灣", "display_name": "放學: 柏景灣往海達邨"}
     ]
     
     found_stops = []
@@ -82,8 +82,8 @@ else:
             display_name = s['display_name']
             direction = s['direction']
             
-            st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 站點: {display_name}</div>", unsafe_allow_html=True)
-            st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
+            st.markdown(f"<div style='margin-top: 20px; font-size: {STATION_SIZE}; font-weight: bold;'>📍 {display_name}</div>", unsafe_allow_html=True)
+            #st.markdown(f"<span style='font-size: 14px; color: gray;'>方向: {direction.upper()} | Stop ID: {stop_id}</span>", unsafe_allow_html=True)
             
             eta_url = f"https://rt.data.gov.hk/v2/transport/citybus/eta/CTB/{stop_id}/20"
             res = requests.get(eta_url)
