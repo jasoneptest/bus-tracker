@@ -1,6 +1,9 @@
 import streamlit as st
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
+
+# 定義香港時區 (UTC+8)
+HK_TZ = timezone(timedelta(hours=8))
 
 st.set_page_config(
     page_title="城巴 20 號線（南昌站）實時到站",
@@ -46,9 +49,9 @@ if not stops:
 else:
     @st.fragment(run_every=30)
     def render_eta():
-        # 修正：強制轉換為香港時間 (UTC+8)
-        hk_now = datetime.utcnow() + timedelta(hours=8)
-        st.markdown(f"⏱️ **最後更新時間:** `{hk_now.strftime('%Y-%m-%d %H:%M:%S')}` *(每 30 秒自動更新)*")
+        # 以香港時區取得當前精準時間
+        now_hk = datetime.now(HK_TZ)
+        st.markdown(f"⏱️ **最後更新時間:** `{now_hk.strftime('%Y-%m-%d %H:%M:%S')}` *(每 30 秒自動更新)*")
         
         for s in stops:
             stop_id = s['stop_id']
@@ -74,16 +77,21 @@ else:
                     eta_str = item.get("eta")
                     
                     if eta_str:
-                        # 將 API 的預計到站時間轉為香港時間
-                        eta_dt = datetime.fromisoformat(eta_str).replace(tzinfo=None) + timedelta(hours=8)
+                        # 解析 API 時間並統一轉換至香港時區
+                        eta_dt = datetime.fromisoformat(eta_str).astimezone(HK_TZ)
                         eta_time_str = eta_dt.strftime('%H:%M:%S')
-                        diff_seconds = (eta_dt - hk_now).total_seconds()
-                        diff_mins = max(0, int(round(diff_seconds / 60)))
-                        time_desc = f"約 {diff_mins} 分鐘後 ({eta_time_str})"
+                        
+                        # 計算與現在的時間差（秒）
+                        diff_seconds = (eta_dt - now_hk).total_seconds()
+                        diff_mins = int(round(diff_seconds / 60))
+                        
+                        if diff_mins <= 0:
+                            time_desc = f"即將到站 ({eta_time_str})"
+                        else:
+                            time_desc = f"約 {diff_mins} 分鐘後 ({eta_time_str})"
                     else:
                         time_desc = "暫無具體時間"
                         
-                    # 已移除備註欄位
                     table_rows.append({
                         "班次": f"第 {i} 架",
                         "目的地": dest,
