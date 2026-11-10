@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
 st.set_page_config(
     page_title="城巴 20 號線（南昌站）實時到站",
@@ -12,7 +12,7 @@ st.title("🚍 城巴 20 號線（南昌站）實時到站查詢")
 st.write("即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。")
 
 # 動態搜尋南昌站的 Stop ID
-@st.cache_data(ttl=3600)  # 快取 1 小時，避免頻繁請求
+@st.cache_data(ttl=3600)
 def get_nam_cheong_stops():
     route = "20"
     target_keyword = "南昌站"
@@ -46,8 +46,9 @@ if not stops:
 else:
     @st.fragment(run_every=30)
     def render_eta():
-        current_time = datetime.now()
-        st.markdown(f"⏱️ **最後更新時間:** `{current_time.strftime('%Y-%m-%d %H:%M:%S')}` *(每 30 秒自動更新)*")
+        # 修正：強制轉換為香港時間 (UTC+8)
+        hk_now = datetime.utcnow() + timedelta(hours=8)
+        st.markdown(f"⏱️ **最後更新時間:** `{hk_now.strftime('%Y-%m-%d %H:%M:%S')}` *(每 30 秒自動更新)*")
         
         for s in stops:
             stop_id = s['stop_id']
@@ -71,22 +72,22 @@ else:
                 for i, item in enumerate(eta_data, 1):
                     dest = item.get("dest_tc", "")
                     eta_str = item.get("eta")
-                    rmk = item.get("rmk_tc", "")
                     
                     if eta_str:
-                        eta_dt = datetime.fromisoformat(eta_str).replace(tzinfo=None)
+                        # 將 API 的預計到站時間轉為香港時間
+                        eta_dt = datetime.fromisoformat(eta_str).replace(tzinfo=None) + timedelta(hours=8)
                         eta_time_str = eta_dt.strftime('%H:%M:%S')
-                        diff_seconds = (eta_dt - current_time).total_seconds()
+                        diff_seconds = (eta_dt - hk_now).total_seconds()
                         diff_mins = max(0, int(round(diff_seconds / 60)))
                         time_desc = f"約 {diff_mins} 分鐘後 ({eta_time_str})"
                     else:
                         time_desc = "暫無具體時間"
                         
+                    # 已移除備註欄位
                     table_rows.append({
                         "班次": f"第 {i} 架",
                         "目的地": dest,
-                        "預計到站": time_desc,
-                        "備註": rmk if rmk else "-"
+                        "預計到站": time_desc
                     })
                 
                 st.table(table_rows)
