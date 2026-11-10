@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 st.markdown(f"<h1 style='font-size: {TITLE_SIZE};'>{CUSTOM_TITLE}</h1>", unsafe_allow_html=True)
-st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
+#st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
 
 @st.cache_data(ttl=3600)
 def get_nam_cheong_stops():
