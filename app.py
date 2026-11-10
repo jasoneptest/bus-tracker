@@ -6,7 +6,7 @@ from datetime import datetime, timezone, timedelta
 CUSTOM_TITLE = "城巴 20 號線（南昌站）實時到站"
 TITLE_SIZE = "28px"
 CONTENT_SIZE = "18px"     # 一般說明文字大小
-TABLE_TEXT_SIZE = "20px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
+TABLE_TEXT_SIZE = "18px"  # 📌 表格內的文字大小（可在此自由更改，例如 16px、18px）
 STATION_SIZE = "22px"     # 站點名稱大小
 # ==================================================
 
