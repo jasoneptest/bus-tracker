@@ -2,15 +2,13 @@ import streamlit as st
 import requests
 from datetime import datetime, timezone, timedelta
 
-# ==================== 字體大小與標題自訂設定區 ====================
-CUSTOM_TITLE = "🚍 城巴 20 號線（南昌站）實時到站"  # 網頁標題文字
+# ==================== 設定區 ====================
+CUSTOM_TITLE = "🚍 城巴 20 號線（南昌站）實時到站"
+TITLE_SIZE = "28px"
+CONTENT_SIZE = "18px"
+STATION_SIZE = "22px"
+# ==================================================
 
-TITLE_SIZE = "28px"       # 頁面大標題大小
-CONTENT_SIZE = "18px"     # 一般說明與表格內文字大小
-STATION_SIZE = "22px"     # 站點名稱大小
-# ================================================================
-
-# 定義香港時區 (UTC+8)
 HK_TZ = timezone(timedelta(hours=8))
 
 st.set_page_config(
@@ -20,7 +18,7 @@ st.set_page_config(
 )
 
 st.markdown(f"<h1 style='font-size: {TITLE_SIZE};'>{CUSTOM_TITLE}</h1>", unsafe_allow_html=True)
-st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報。</span>", unsafe_allow_html=True)
+st.markdown(f"<span style='font-size: {CONTENT_SIZE};'>即時顯示城巴 20 號線在南昌站的最新到站預報（每 30 秒自動更新）。</span>", unsafe_allow_html=True)
 
 @st.cache_data(ttl=3600)
 def get_nam_cheong_stops():
@@ -77,16 +75,8 @@ else:
                     st.info("目前此站點暫無實時到站班次資料（可能該時段暫無班次）。")
                     continue
                 
-                # 修正：確保包含完整的 <table ...> 開頭標籤
-                table_html = f"""
-                <table style="width:100%; font-size: {CONTENT_SIZE}; border-collapse: collapse; margin-top: 10px;">
-                  <tr style="border-bottom: 2px solid #ddd; text-align: left; background-color: #f9f9f9;">
-                    <th style="padding: 10px;">班次</th>
-                    <th style="padding: 10px;">目的地</th>
-                    <th style="padding: 10px;">預計到站</th>
-                  </tr>
-                """
-                
+                # 改用 Python 字典列表來建構表格，完美避開 HTML 顯示問題
+                table_data = []
                 for i, item in enumerate(eta_data, 1):
                     dest = item.get("dest_tc", "")
                     eta_str = item.get("eta")
@@ -104,16 +94,14 @@ else:
                     else:
                         time_desc = "暫無具體時間"
                         
-                    table_html += f"""
-                      <tr style="border-bottom: 1px solid #eee;">
-                        <td style="padding: 10px;">第 {i} 架</td>
-                        <td style="padding: 10px;">{dest}</td>
-                        <td style="padding: 10px;">{time_desc}</td>
-                      </tr>
-                    """
+                    table_data.append({
+                        "班次": f"第 {i} 架",
+                        "目的地": dest,
+                        "預計到站": time_desc
+                    })
                 
-                table_html += "</table>"
-                st.markdown(table_html, unsafe_allow_html=True)
+                # 使用原生 st.table 顯示，美觀又不會出錯
+                st.table(table_data)
                 
             else:
                 st.warning("無法取得該站點的 ETA 資料。")
